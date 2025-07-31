@@ -1,0 +1,123 @@
+<!-- templates/admin/transactions.html -->
+{% extends "base.html" %}
+
+{% block title %}Transaction History - Admin{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <h2><i class="fas fa-history me-2"></i>Transaction History</h2>
+        <a href="{{ url_for('admin_dashboard') }}" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+        </a>
+    </div>
+</div>
+
+<!-- Navigation Tabs -->
+<ul class="nav nav-tabs mb-4" role="tablist">
+    <li class="nav-item" role="presentation">
+        <button class="nav-link active" id="deposits-history-tab" data-bs-toggle="tab" data-bs-target="#deposits-history" type="button">
+            <i class="fas fa-plus me-2"></i>Deposits
+        </button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link" id="withdrawals-history-tab" data-bs-toggle="tab" data-bs-target="#withdrawals-history" type="button">
+            <i class="fas fa-minus me-2"></i>Withdrawals
+        </button>
+    </li>
+</ul>
+
+<!-- Tab Content -->
+<div class="tab-content">
+    <!-- Deposits History -->
+    <div class="tab-pane fade show active" id="deposits-history" role="tabpanel">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">All Deposits</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>User</th>
+                                <th>Amount</th>
+                                <th>Status</th>
+                                <th>Screenshot</th>
+                                <th>Submitted</th>
+                                <th>Processed</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for deposit in deposits %}
+                            <tr>
+                                <td>{{ deposit.id }}</td>
+                                <td>{{ deposit.user.username }}</td>
+                                <td>₹{{ deposit.amount }}</td>
+                                <td>
+                                    <span class="badge bg-{{ 'success' if deposit.status == 'approved' else 'warning' if deposit.status == 'pending' else 'danger' }}">
+                                        {{ deposit.status.title() }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <a href="{{ url_for('static', filename=deposit.screenshot_path.replace('static/', '')) }}" 
+                                       target="_blank" class="btn btn-outline-primary btn-sm">
+                                        <i class="fas fa-image"></i>
+                                    </a>
+                                </td>
+                                <td>{{ deposit.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                                <td>{{ deposit.processed_at.strftime('%Y-%m-%d %H:%M') if deposit.processed_at else '-' }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Withdrawals History -->
+    <div class="tab-pane fade" id="withdrawals-history" role="tabpanel">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">All Withdrawals</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>User</th>
+                                <th>Amount</th>
+                                <th>UPI ID</th>
+                                <th>Status</th>
+                                <th>Requested</th>
+                                <th>Processed</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for withdrawal in withdrawals %}
+                            <tr>
+                                <td>{{ withdrawal.id }}</td>
+                                <td>{{ withdrawal.user.username }}</td>
+                                <td>₹{{ withdrawal.amount }}</td>
+                                <td>{{ withdrawal.upi_id }}</td>
+                                <td>
+                                    <span class="badge bg-{{ 'success' if withdrawal.status == 'approved' else 'warning' if withdrawal.status == 'pending' else 'danger' }}">
+                                        {{ withdrawal.status.title() }}
+                                    </span>
+                                </td>
+                                <td>{{ withdrawal.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                                <td>{{ withdrawal.processed_at.strftime('%Y-%m-%d %H:%M') if withdrawal.processed_at else '-' }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

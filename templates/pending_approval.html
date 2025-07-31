@@ -1,0 +1,20 @@
+<!-- templates/pending_approval.html -->
+{% extends "base.html" %}
+
+{% block title %}Pending Approval - Wallet System{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card border-warning">
+            <div class="card-body text-center">
+                <i class="fas fa-clock text-warning" style="font-size: 4rem;"></i>
+                <h2 class="mt-3">Account Pending Approval</h2>
+                <p class="lead">Your account is currently under review by our administrators.</p>
+                <p>You will receive access to your dashboard once your account is approved.</p>
+                <p class="text-muted">Thank you for your patience!</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

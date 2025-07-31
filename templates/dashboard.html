@@ -1,0 +1,126 @@
+<!-- templates/dashboard.html -->
+{% extends "base.html" %}
+
+{% block title %}Dashboard - Wallet System{% endblock %}
+
+{% block content %}
+<div class="row">
+    <!-- Wallet Balance -->
+    <div class="col-md-4 mb-4">
+        <div class="card bg-success text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h5 class="card-title">Wallet Balance</h5>
+                        <h2 class="mb-0">₹{{ wallet.balance if wallet else '0.00' }}</h2>
+                    </div>
+                    <i class="fas fa-wallet fa-3x opacity-50"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Quick Actions -->
+    <div class="col-md-8 mb-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Quick Actions</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6 mb-2">
+                        <a href="{{ url_for('deposit') }}" class="btn btn-primary w-100">
+                            <i class="fas fa-plus me-2"></i>Make Deposit
+                        </a>
+                    </div>
+                    <div class="col-md-6 mb-2">
+                        <a href="{{ url_for('withdraw') }}" class="btn btn-outline-danger w-100">
+                            <i class="fas fa-minus me-2"></i>Request Withdrawal
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Recent Deposits -->
+    <div class="col-md-6 mb-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Recent Deposits</h5>
+            </div>
+            <div class="card-body">
+                {% if deposits %}
+                    <div class="table-responsive">
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Amount</th>
+                                    <th>Status</th>
+                                    <th>Date</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for deposit in deposits %}
+                                <tr>
+                                    <td>₹{{ deposit.amount }}</td>
+                                    <td>
+                                        <span class="badge bg-{{ 'success' if deposit.status == 'approved' else 'warning' if deposit.status == 'pending' else 'danger' }}">
+                                            {{ deposit.status.title() }}
+                                        </span>
+                                    </td>
+                                    <td>{{ deposit.created_at.strftime('%Y-%m-%d') }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <p class="text-muted">No deposits yet.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <!-- Recent Withdrawals -->
+    <div class="col-md-6 mb-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Recent Withdrawals</h5>
+            </div>
+            <div class="card-body">
+                {% if withdrawals %}
+                    <div class="table-responsive">
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Amount</th>
+                                    <th>Status</th>
+                                    <th>Date</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for withdrawal in withdrawals %}
+                                <tr>
+                                    <td>₹{{ withdrawal.amount }}</td>
+                                    <td>
+                                        <span class="badge bg-{{ 'success' if withdrawal.status == 'approved' else 'warning' if withdrawal.status == 'pending' else 'danger' }}">
+                                            {{ withdrawal.status.title() }}
+                                        </span>
+                                    </td>
+                                    <td>{{ withdrawal.created_at.strftime('%Y-%m-%d') }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <p class="text-muted">No withdrawals yet.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

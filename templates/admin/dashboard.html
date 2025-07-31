@@ -1,0 +1,280 @@
+<!-- templates/admin/dashboard.html -->
+{% extends "base.html" %}
+
+{% block title %}Admin Dashboard - Wallet System{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <h2><i class="fas fa-tachometer-alt me-2"></i>Admin Dashboard</h2>
+    </div>
+</div>
+
+<!-- Quick Stats -->
+<div class="row mb-4">
+    <div class="col-md-4">
+        <div class="card bg-warning text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h5 class="card-title">Pending Users</h5>
+                        <h2 class="mb-0">{{ pending_users|length }}</h2>
+                    </div>
+                    <i class="fas fa-user-clock fa-3x opacity-50"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card bg-info text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h5 class="card-title">Pending Deposits</h5>
+                        <h2 class="mb-0">{{ pending_deposits|length }}</h2>
+                    </div>
+                    <i class="fas fa-plus-circle fa-3x opacity-50"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card bg-danger text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h5 class="card-title">Pending Withdrawals</h5>
+                        <h2 class="mb-0">{{ pending_withdrawals|length }}</h2>
+                    </div>
+                    <i class="fas fa-minus-circle fa-3x opacity-50"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Navigation Tabs -->
+<ul class="nav nav-tabs mb-4" id="adminTabs" role="tablist">
+    <li class="nav-item" role="presentation">
+        <button class="nav-link active" id="users-tab" data-bs-toggle="tab" data-bs-target="#users" type="button">
+            <i class="fas fa-users me-2"></i>Pending Users
+        </button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link" id="deposits-tab" data-bs-toggle="tab" data-bs-target="#deposits" type="button">
+            <i class="fas fa-plus me-2"></i>Pending Deposits
+        </button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link" id="withdrawals-tab" data-bs-toggle="tab" data-bs-target="#withdrawals" type="button">
+            <i class="fas fa-minus me-2"></i>Pending Withdrawals
+        </button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link" id="manage-tab" data-bs-toggle="tab" data-bs-target="#manage" type="button">
+            <i class="fas fa-cog me-2"></i>Manage
+        </button>
+    </li>
+</ul>
+
+<!-- Tab Content -->
+<div class="tab-content" id="adminTabsContent">
+    <!-- Pending Users Tab -->
+    <div class="tab-pane fade show active" id="users" role="tabpanel">
+        {% if pending_users %}
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Users Awaiting Approval</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Username</th>
+                                    <th>Email</th>
+                                    <th>Phone</th>
+                                    <th>Registration Date</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for user in pending_users %}
+                                <tr>
+                                    <td>{{ user.username }}</td>
+                                    <td>{{ user.email }}</td>
+                                    <td>{{ user.phone }}</td>
+                                    <td>{{ user.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                                    <td>
+                                        <a href="{{ url_for('approve_user', user_id=user.id) }}" 
+                                           class="btn btn-success btn-sm me-2"
+                                           onclick="return confirm('Approve this user?')">
+                                            <i class="fas fa-check me-1"></i>Approve
+                                        </a>
+                                        <a href="{{ url_for('reject_user', user_id=user.id) }}" 
+                                           class="btn btn-danger btn-sm"
+                                           onclick="return confirm('Reject and delete this user?')">
+                                            <i class="fas fa-times me-1"></i>Reject
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        {% else %}
+            <div class="alert alert-info">
+                <i class="fas fa-info-circle me-2"></i>No users pending approval.
+            </div>
+        {% endif %}
+    </div>
+    
+    <!-- Pending Deposits Tab -->
+    <div class="tab-pane fade" id="deposits" role="tabpanel">
+        {% if pending_deposits %}
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Deposits Awaiting Verification</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>User</th>
+                                    <th>Amount</th>
+                                    <th>Screenshot</th>
+                                    <th>Date</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for deposit in pending_deposits %}
+                                <tr>
+                                    <td>{{ deposit.user.username }}</td>
+                                    <td>₹{{ deposit.amount }}</td>
+                                    <td>
+                                        <a href="{{ url_for('static', filename=deposit.screenshot_path.replace('static/', '')) }}" 
+                                           target="_blank" class="btn btn-outline-primary btn-sm">
+                                            <i class="fas fa-image me-1"></i>View
+                                        </a>
+                                    </td>
+                                    <td>{{ deposit.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                                    <td>
+                                        <a href="{{ url_for('process_deposit', deposit_id=deposit.id, action='approve') }}" 
+                                           class="btn btn-success btn-sm me-2"
+                                           onclick="return confirm('Approve this deposit?')">
+                                            <i class="fas fa-check me-1"></i>Approve
+                                        </a>
+                                        <a href="{{ url_for('process_deposit', deposit_id=deposit.id, action='reject') }}" 
+                                           class="btn btn-danger btn-sm"
+                                           onclick="return confirm('Reject this deposit?')">
+                                            <i class="fas fa-times me-1"></i>Reject
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        {% else %}
+            <div class="alert alert-info">
+                <i class="fas fa-info-circle me-2"></i>No deposits pending verification.
+            </div>
+        {% endif %}
+    </div>
+    
+    <!-- Pending Withdrawals Tab -->
+    <div class="tab-pane fade" id="withdrawals" role="tabpanel">
+        {% if pending_withdrawals %}
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Withdrawal Requests</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>User</th>
+                                    <th>Amount</th>
+                                    <th>UPI ID</th>
+                                    <th>Current Balance</th>
+                                    <th>Date</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for withdrawal in pending_withdrawals %}
+                                <tr>
+                                    <td>{{ withdrawal.user.username }}</td>
+                                    <td>₹{{ withdrawal.amount }}</td>
+                                    <td>{{ withdrawal.upi_id }}</td>
+                                    <td>₹{{ withdrawal.user.wallet.balance if withdrawal.user.wallet else '0.00' }}</td>
+                                    <td>{{ withdrawal.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                                    <td>
+                                        <a href="{{ url_for('process_withdrawal', withdrawal_id=withdrawal.id, action='approve') }}" 
+                                           class="btn btn-success btn-sm me-2"
+                                           onclick="return confirm('Approve this withdrawal?')">
+                                            <i class="fas fa-check me-1"></i>Approve
+                                        </a>
+                                        <a href="{{ url_for('process_withdrawal', withdrawal_id=withdrawal.id, action='reject') }}" 
+                                           class="btn btn-danger btn-sm"
+                                           onclick="return confirm('Reject this withdrawal?')">
+                                            <i class="fas fa-times me-1"></i>Reject
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        {% else %}
+            <div class="alert alert-info">
+                <i class="fas fa-info-circle me-2"></i>No withdrawal requests pending.
+            </div>
+        {% endif %}
+    </div>
+    
+    <!-- Manage Tab -->
+    <div class="tab-pane fade" id="manage" role="tabpanel">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">
+                            <i class="fas fa-users me-2"></i>Manage Users
+                        </h5>
+                        <p class="card-text">View and manage all registered users</p>
+                        <a href="{{ url_for('admin_users') }}" class="btn btn-primary">
+                            <i class="fas fa-users me-2"></i>View All Users
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">
+                            <i class="fas fa-exchange-alt me-2"></i>Transaction History
+                        </h5>
+                        <p class="card-text">View all deposits and withdrawals</p>
+                        <a href="{{ url_for('admin_transactions') }}" class="btn btn-primary">
+                            <i class="fas fa-history me-2"></i>View Transactions
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,47 @@
+<!-- templates/deposit.html -->
+{% extends "base.html" %}
+
+{% block title %}Make Deposit - Wallet System{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="mb-0"><i class="fas fa-plus me-2"></i>Make Deposit</h3>
+            </div>
+            <div class="card-body">
+                <form method="POST" enctype="multipart/form-data">
+                    <div class="mb-3">
+                        <label for="amount" class="form-label">Amount (₹)</label>
+                        <input type="number" class="form-control" id="amount" name="amount" min="1" step="0.01" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="screenshot" class="form-label">Payment Screenshot</label>
+                        <input type="file" class="form-control" id="screenshot" name="screenshot" accept="image/*" required>
+                        <div class="form-text">Upload a screenshot of your UPI payment</div>
+                    </div>
+                    
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i>
+                        Please make the payment using your UPI app and upload a screenshot. Your deposit will be processed after admin verification.
+                    </div>
+                    
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-upload me-2"></i>Submit Deposit Request
+                        </button>
+                    </div>
+                </form>
+                
+                <div class="text-center mt-3">
+                    <a href="{{ url_for('dashboard') }}" class="btn btn-outline-secondary">
+                        <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

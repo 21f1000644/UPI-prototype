@@ -1,0 +1,55 @@
+<!-- templates/withdraw.html -->
+{% extends "base.html" %}
+
+{% block title %}Request Withdrawal - Wallet System{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="mb-0"><i class="fas fa-minus me-2"></i>Request Withdrawal</h3>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-info mb-3">
+                    <i class="fas fa-wallet me-2"></i>
+                    Available Balance: ₹{{ current_user.wallet.balance if current_user.wallet else '0.00' }}
+                </div>
+                
+                <form method="POST">
+                    <div class="mb-3">
+                        <label for="amount" class="form-label">Amount (₹)</label>
+                        <input type="number" class="form-control" id="amount" name="amount" 
+                               min="1" step="0.01" 
+                               max="{{ current_user.wallet.balance if current_user.wallet else 0 }}" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="upi_id" class="form-label">UPI ID</label>
+                        <input type="text" class="form-control" id="upi_id" name="upi_id" 
+                               placeholder="yourname@upi" required>
+                        <div class="form-text">Enter your UPI ID where you want to receive the money</div>
+                    </div>
+                    
+                    <div class="alert alert-warning">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        Withdrawal requests are subject to admin approval. Processing may take 24-48 hours.
+                    </div>
+                    
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-danger">
+                            <i class="fas fa-paper-plane me-2"></i>Submit Withdrawal Request
+                        </button>
+                    </div>
+                </form>
+                
+                <div class="text-center mt-3">
+                    <a href="{{ url_for('dashboard') }}" class="btn btn-outline-secondary">
+                        <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
